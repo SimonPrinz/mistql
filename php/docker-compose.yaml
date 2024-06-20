@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  php:
+    build: .
+    command: tail -f /dev/null # keep container running
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - ../shared:/app/shared:ro

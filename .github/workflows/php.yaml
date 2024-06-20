@@ -1,0 +1,40 @@
+name: PHP CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./php
+    strategy:
+      matrix:
+        php-version: [ '8.1','8.2','8.3' ]
+    steps:
+      - name: 🔄 Checkout repository
+        uses: actions/checkout@v4
+      - name: ⚙️ Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+      - name: 🗄️ Check cache for composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+            ${{ runner.os }}-composer-
+      - name: 📦 Install composer dependencies
+        run: composer install
+      - name: 📂 Copy shared testdata
+        run: rm -rf shared && cp -r ../shared shared
+      - name: 🧪 Run tests
+        run: composer run test
