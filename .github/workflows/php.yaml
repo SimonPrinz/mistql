@@ -34,5 +34,7 @@ jobs:
             ${{ runner.os }}-composer-
       - name: 📦 Install composer dependencies
         run: composer install
+      - name: 📂 Copy shared testdata
+        run: rm -rf shared && cp -r ../shared shared
       - name: 🧪 Run tests
         run: composer run test
